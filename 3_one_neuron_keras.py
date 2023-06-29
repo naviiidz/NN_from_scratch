@@ -1,25 +1,32 @@
+import tensorflow as tf
+from keras.models import Sequential
+from keras.layers import Dense
 import numpy as np
 import random
 import matplotlib.pyplot as plt
+
 color=['r','b']
-n_train=1000
-n_test=500
-N=1500; #N points for each cluster
-# Train partition
+
+N=1000; # N points for each cluster
+train_part=70 # percentage of train points
+test_part=100-train_part
+
+n_train=int(2*N*train_part/100)
+n_test=int(2*N*test_part/100)
+
+# Generating points
 p =[6,10,12,5] # Cluster centers
 x=np.zeros((2*N,2)) # Pre allocation of the input and output
 t =np.zeros((2*N,1)) # Target
-
-
 # Synthetic Data
-r =np.random.normal ( 0 , 1 , 2*N)
-the=2*np.pi*np.random.rand(2*N)
-x[0:N,0] = p[0] + r [ 0 :N]*np.cos(the[0:N] )
+r =np.random.normal ( 0 , 1 , 2*N) # normal along r axis
+the=2*np.pi*np.random.rand(2*N) # uniform in theta
+x[0:N,0] = p[0] + r [ 0 :N]*np.cos(the[0:N] ) # shift using p + convert2cartesian
 x[0:N,1] = p[1] + r [ 0 :N]*np.sin(the[0:N] )
-t[0:N]=0
+t[0:N]=0 # first cluster labels
 x[N:2*N,0] = p[2] + r[N:2*N]*np.cos(the[N:2*N] )
 x[N:2*N,1] = p[3] + r[N:2*N]*np.sin(the[N:2*N] )
-t[N:2*N]=1
+t[N:2*N]=1 # second cluster labes
 
 
 
