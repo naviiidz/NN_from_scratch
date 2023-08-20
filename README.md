@@ -1,7 +1,7 @@
 # NN_from_scratch
-`Neural Networks Sample codes from scratch
-`
-# Downloading YCB dataset:
+Neural Networks Sample codes from scratch
+
+# How to download YCB dataset:
 `git clone https://github.com/hsp-iit/fast-ycb.git
 `
 Then:
