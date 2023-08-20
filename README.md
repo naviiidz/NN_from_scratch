@@ -2,7 +2,7 @@
 Neural Networks Sample codes from scratch
 
 # How to download YCB dataset:  
-Git clone this repo:
+Git clone this repo:  
 `git clone https://github.com/hsp-iit/fast-ycb.git  
 `  
 Then:  
