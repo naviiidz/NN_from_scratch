@@ -1,16 +1,4 @@
 #!/usr/bin/env python
-__author__ = "Sreenivas Bhattiprolu"
-__license__ = "Feel free to copy, I appreciate if you acknowledge Python for Microscopists"
-
-# https://www.youtube.com/watch?v=0kiroPnV1tM
-# https://www.youtube.com/watch?v=cUHPL_dk17E
-# https://www.youtube.com/watch?v=RaswBvMnFxk
-
-
-
-"""
-@author: Sreenivas Bhattiprolu
-"""
 
 import tensorflow as tf
 import os
@@ -22,58 +10,65 @@ from tqdm import tqdm
 from skimage.io import imread, imshow
 from skimage.transform import resize
 import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
 
-seed = 42
-np.random.seed = seed
+
 
 IMG_WIDTH = 128
 IMG_HEIGHT = 128
 IMG_CHANNELS = 3
 
-TRAIN_PATH = '003_cracker_box_real/'
-TEST_PATH = '003_cracker_box_real/'
+import os
+import numpy as np
+import matplotlib.pyplot as plt
+from tqdm import tqdm
+from skimage.io import imread, imshow
+from skimage.transform import resize
+import random
 
-train_ids = next(os.walk(TRAIN_PATH))[1]
-test_ids = next(os.walk(TEST_PATH))[1]
+# Define paths
+BASE_PATH = '/home/navid/fast-ycb/tools/python/003_cracker_box'
+RGB_PATH = os.path.join(BASE_PATH, 'rgb')
+MASK_PATH = os.path.join(BASE_PATH, 'masks/gt')
 
-X_train = np.zeros((len(train_ids), IMG_HEIGHT, IMG_WIDTH, IMG_CHANNELS), dtype=np.uint8)
-Y_train = np.zeros((len(train_ids), IMG_HEIGHT, IMG_WIDTH, 1), dtype=np.bool)
+# Get file names in the rgb and mask folders
+rgb_files = next(os.walk(RGB_PATH))[2]
+mask_files = next(os.walk(MASK_PATH))[2]
 
-print('Resizing training images and masks')
-for n, id_ in tqdm(enumerate(train_ids), total=len(train_ids)):   
-    path = TRAIN_PATH + id_
-    img = imread(path + '/images/' + id_ + '.png')[:,:,:IMG_CHANNELS]  
+# Ensure the file names are sorted to match rgb and mask pairs
+rgb_files.sort()
+mask_files.sort()
+
+# Initialize arrays to store data
+X_data = np.zeros((len(rgb_files), IMG_HEIGHT, IMG_WIDTH, IMG_CHANNELS), dtype=np.uint8)
+Y_data = np.zeros((len(mask_files), IMG_HEIGHT, IMG_WIDTH, 1), dtype=bool)
+
+# Load rgb images
+print('Loading RGB images')
+for n, rgb_file in tqdm(enumerate(rgb_files), total=len(rgb_files)):
+    img = imread(os.path.join(RGB_PATH, rgb_file))[:, :, :IMG_CHANNELS]
     img = resize(img, (IMG_HEIGHT, IMG_WIDTH), mode='constant', preserve_range=True)
-    X_train[n] = img  #Fill empty X_train with values from img
-    mask = np.zeros((IMG_HEIGHT, IMG_WIDTH, 1), dtype=np.bool)
-    for mask_file in next(os.walk(path + '/masks/'))[2]:
-        mask_ = imread(path + '/masks/' + mask_file)
-        mask_ = np.expand_dims(resize(mask_, (IMG_HEIGHT, IMG_WIDTH), mode='constant',  
-                                      preserve_range=True), axis=-1)
-        mask = np.maximum(mask, mask_)  
-            
-    Y_train[n] = mask   
+    X_data[n] = img
 
-# test images
-X_test = np.zeros((len(test_ids), IMG_HEIGHT, IMG_WIDTH, IMG_CHANNELS), dtype=np.uint8)
-sizes_test = []
-print('Resizing test images') 
-for n, id_ in tqdm(enumerate(test_ids), total=len(test_ids)):
-    path = TEST_PATH + id_
-    img = imread(path + '/images/' + id_ + '.png')[:,:,:IMG_CHANNELS]
-    sizes_test.append([img.shape[0], img.shape[1]])
-    img = resize(img, (IMG_HEIGHT, IMG_WIDTH), mode='constant', preserve_range=True)
-    X_test[n] = img
+# Load mask images
+print('Loading mask images')
+for n, mask_file in tqdm(enumerate(mask_files), total=len(mask_files)):
+    mask = imread(os.path.join(MASK_PATH, mask_file))
+    mask = np.expand_dims(resize(mask, (IMG_HEIGHT, IMG_WIDTH), mode='constant', preserve_range=True), axis=-1)
+    Y_data[n] = mask
 
-print('Done!')
-
-image_x = random.randint(0, len(train_ids))
-imshow(X_train[image_x])
+# Display a random example
+image_x = random.randint(0, len(rgb_files))
+imshow(X_data[image_x])
+plt.title('Original Image')
 plt.show()
-imshow(np.squeeze(Y_train[image_x]))
+
+imshow(np.squeeze(Y_data[image_x]))
+plt.title('Corresponding Mask')
 plt.show()
 
 
+X_train, X_test, Y_train, Y_test = train_test_split(X_data, Y_data, test_size=0.3, random_state=42)
 
 
 #Build the model
@@ -138,7 +133,7 @@ model.summary()
 
 ################################
 #Modelcheckpoint
-checkpointer = tf.keras.callbacks.ModelCheckpoint('model_for_nuclei.h5', verbose=1, save_best_only=True)
+checkpointer = tf.keras.callbacks.ModelCheckpoint('model_for_ycb.h5', verbose=1, save_best_only=True)
 
 callbacks = [
         tf.keras.callbacks.EarlyStopping(patience=2, monitor='val_loss'),
@@ -178,7 +173,6 @@ imshow(np.squeeze(Y_train[int(Y_train.shape[0]*0.9):][ix]))
 plt.show()
 imshow(np.squeeze(preds_val_t[ix]))
 plt.show()
-
 
 
 
