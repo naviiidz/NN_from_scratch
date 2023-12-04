@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+
 import tensorflow as tf
 import os
 import random
@@ -174,7 +175,23 @@ plt.show()
 imshow(np.squeeze(preds_val_t[ix]))
 plt.show()
 
+# Plot the training and validation loss
+plt.plot(results.history['loss'], label='Training Loss')
+plt.plot(results.history['val_loss'], label='Validation Loss')
+plt.title('Training and Validation Loss')
+plt.xlabel('Epoch')
+plt.ylabel('Loss')
+plt.legend()
+plt.show()
 
+# Plot the training and validation accuracy
+plt.plot(results.history['accuracy'], label='Training Accuracy')
+plt.plot(results.history['val_accuracy'], label='Validation Accuracy')
+plt.title('Training and Validation Accuracy')
+plt.xlabel('Epoch')
+plt.ylabel('Accuracy')
+plt.legend()
+plt.show()
 
 
 
