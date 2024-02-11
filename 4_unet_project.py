@@ -19,14 +19,6 @@ IMG_WIDTH = 128
 IMG_HEIGHT = 128
 IMG_CHANNELS = 3
 
-import os
-import numpy as np
-import matplotlib.pyplot as plt
-from tqdm import tqdm
-from skimage.io import imread, imshow
-from skimage.transform import resize
-import random
-
 # Define paths
 BASE_PATH = '/home/navid/fast-ycb/tools/python/003_cracker_box'
 RGB_PATH = os.path.join(BASE_PATH, 'rgb')
