@@ -136,8 +136,6 @@ results = model.fit(X_train, Y_train, validation_split=0.1, batch_size=16, epoch
 
 ####################################
 
-idx = random.randint(0, len(X_train))
-
 
 preds_train = model.predict(X_train[:int(X_train.shape[0]*0.9)], verbose=1)
 preds_val = model.predict(X_train[int(X_train.shape[0]*0.9):], verbose=1)
