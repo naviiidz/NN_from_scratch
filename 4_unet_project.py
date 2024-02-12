@@ -19,6 +19,14 @@ IMG_WIDTH = 128
 IMG_HEIGHT = 128
 IMG_CHANNELS = 3
 
+import os
+import numpy as np
+import matplotlib.pyplot as plt
+from tqdm import tqdm
+from skimage.io import imread, imshow
+from skimage.transform import resize
+import random
+
 # Define paths
 BASE_PATH = '/home/navid/fast-ycb/tools/python/003_cracker_box'
 RGB_PATH = os.path.join(BASE_PATH, 'rgb')
@@ -136,6 +144,8 @@ results = model.fit(X_train, Y_train, validation_split=0.1, batch_size=16, epoch
 
 ####################################
 
+idx = random.randint(0, len(X_train))
+
 
 preds_train = model.predict(X_train[:int(X_train.shape[0]*0.9)], verbose=1)
 preds_val = model.predict(X_train[int(X_train.shape[0]*0.9):], verbose=1)
@@ -182,20 +192,3 @@ plt.xlabel('Epoch')
 plt.ylabel('Accuracy')
 plt.legend()
 plt.show()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
